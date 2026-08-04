@@ -117,7 +117,7 @@ async function pkceState(metadata = {}) {
 
 const returned = Object.fromEntries(new URL(location).searchParams.entries());
 if (returned.state) {
-  const [verifier, created, { tokenEndpoint, openidConfigUrl, scopes }] = localStorage.getItem(`${STORAGE_KEY_ROOT}${returned.state}`);
+  const [verifier, created, { tokenEndpoint, openidConfigUrl, scopes }] = JSON.parse(localStorage.getItem(`${STORAGE_KEY_ROOT}${returned.state}`));
   scope.value = scopes;
   configUrl.value = openidConfigUrl;
   localStorage.setItem('scope', scopes);
