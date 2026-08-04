@@ -1,0 +1,8 @@
+{
+  "client_id": "https://fordi.github.io/cimd-test/client.json",
+  "client_name": "CIMD OpenID OAuth2.0 Tester",
+  "redirect_uris": [
+    "https://fordi.github.io/cimd-test/"
+  ],
+  "token_endpoint_auth_method": "none"
+}
