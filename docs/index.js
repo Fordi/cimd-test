@@ -90,6 +90,7 @@ async function discover(configUrl) {
 }
 
 const MAX_AGE = 60000;
+const oldest = Date.now() - MAX_AGE;
 const STORAGE_KEY_ROOT = "*STATE*";
 // Clean up old states
 for (const [key, json] of Object.entries(localStorage)) {
@@ -102,7 +103,7 @@ for (const [key, json] of Object.entries(localStorage)) {
 }
 
 async function pkceState(metadata = {}) {
-  const oldest = Date.now() - MAX_AGE;
+  
   const state = terseRandomUuid();
   const stateKey = `${STORAGE_KEY_ROOT}${state}`;
   const verifier = terseRandomUuid();
