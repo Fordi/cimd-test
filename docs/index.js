@@ -12,7 +12,11 @@ const configChanged = async () => {
     return;
   }
   const { authorization_endpoint, token_endpoint } = await discover(configUrl.value);
-  const [state, code_challenge] = await pkceState();
+  const [state, code_challenge] = await pkceState({
+    openidConfigUrl: configUrl.value,
+    tokenEndpoint: token_endpoint,
+    scopes: scope.value,
+  });
   const ep = new URL(authorization_endpoint);
   ep.searchParams.append("state", state);
   ep.searchParams.append("code_challenge", code_challenge);
@@ -29,6 +33,8 @@ const configChanged = async () => {
 };
 configUrl.addEventListener('change', configChanged);
 configChanged();
+
+
 
 async function sha256(input) {
   const crypto = globalThis.crypto ?? (await import('node:crypto'))?.webcrypto;
@@ -85,18 +91,18 @@ async function discover(configUrl) {
 
 const MAX_AGE = 60000;
 const STORAGE_KEY_ROOT = "*STATE*";
+// Clean up old states
+for (const [key, json] of Object.entries(localStorage)) {
+  if (key.startsWith(STORAGE_KEY_ROOT)) {
+    const [_, created] = JSON.parse(json);
+    if (oldest > created) {
+      localStorage.removeItem(key);
+    }
+  }
+}
 
 async function pkceState(metadata = {}) {
   const oldest = Date.now() - MAX_AGE;
-  // Clean up old states
-  for (const [key, json] of Object.entries(localStorage)) {
-    if (key.startsWith(STORAGE_KEY_ROOT)) {
-      const [_, created] = JSON.parse(json);
-      if (oldest > created) {
-        localStorage.removeItem(key);
-      }
-    }
-  }
   const state = terseRandomUuid();
   const stateKey = `${STORAGE_KEY_ROOT}${state}`;
   const verifier = terseRandomUuid();
@@ -108,3 +114,28 @@ async function pkceState(metadata = {}) {
   ];
 }
 
+const returned = Object.fromEntries(new URL(location).searchParams.entries());
+if (returned.state) {
+  const [verifier, created, { tokenEndpoint, openidConfigUrl, scopes }] = localStorage.getItem(`${STORAGE_KEY_ROOT}${returned.state}`);
+  scope.value = scopes;
+  configUrl.value = openidConfigUrl;
+  localStorage.setItem('scope', scopes);
+  localStorage.setItem('openidConfigUrl', openidConfigUrl);
+  const ep = new URL(tokenEndpoint);
+  const tokenInfo = await fetch(ep, {
+    method: 'post',
+    headers:  {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      grant_type: "authorization_code",
+      client_id: "https://fordi.github.io/cimd-test/client.json",
+      code: returned.code,
+      redirect_uri: new URL(".", location).toString(),
+      code_verifier: verifier,
+    }),
+  }).then(r => r.json());
+  workZone.innerHTML = `<pre>${JSON.stringify(tokenInfo)}</pre>`
+} else if (returned.error) {
+  workZone.innerHTML = `<pre>${JSON.stringify({ error: returned.error, error_description: returned.error_description })}</pre>`;
+}
