@@ -11,7 +11,11 @@ const configChanged = async () => {
   } catch {
     return;
   }
-  const { authorization_endpoint, token_endpoint } = await discover(configUrl.value);
+  try {
+    const { authorization_endpoint, token_endpoint } = await discover(configUrl.value);
+  } catch (e) {
+    workZone.innerHTML = `<span style="color: red">Can't access endpoint; is it online?</span>`;
+  }
   const [state, code_challenge] = await pkceState({
     openidConfigUrl: configUrl.value,
     tokenEndpoint: token_endpoint,
