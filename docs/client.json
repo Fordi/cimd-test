@@ -4,5 +4,6 @@
   "redirect_uris": [
     "https://fordi.github.io/cimd-test/"
   ],
-  "token_endpoint_auth_method": "none"
+  "token_endpoint_auth_method": "none",
+  "logo_url": "cesium-test.png"
 }
