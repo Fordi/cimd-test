@@ -5,5 +5,5 @@
     "https://fordi.github.io/cimd-test/"
   ],
   "token_endpoint_auth_method": "none",
-  "logo_url": "cesium-test.png"
+  "logo_uri": "cesium-test.png"
 }
