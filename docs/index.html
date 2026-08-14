@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-  <head><title>CIMD OpenID OAuth2.0 Tester</title></head>
+  <head><title>OpenID OAuth2.0 Tester</title></head>
   <body>
-    <h1>CIMD OpenID OAuth2.0 Tester</h1>
+    <h1>OpenID OAuth2.0 Tester</h1>
     <div>
       <label for="openidConfigUrl">Environment: </label>
       <input id="openidConfigUrl" type="url" placeholder="https://api.ion.test:8084/" />
@@ -10,6 +10,20 @@
     <div>
       <label for="scope">Scopes: </label>
       <input id="scope" type="text" placeholder="assets:read, assets:write" />
+    </div>
+    <div>
+      <span>Client mode: </span>
+      <label><input type="radio" name="mode" id="modeClientId" value="clientId" /> client_id</label>
+      <label><input type="radio" name="mode" id="modeDcr" value="dcr" /> DCR</label>
+      <label><input type="radio" name="mode" id="modeCimd" value="cimd" /> CIMD</label>
+    </div>
+    <div id="clientIdOptions" style="display: hidden">
+      <label for="clientId">Client ID: </label>
+      <input id="clientId" type="number" placeholder="42" />
+    </div>
+    <div id="dcrOptions" style="display: none">
+      <label for="dcrClientName">DCR client_name: </label>
+      <input id="dcrClientName" type="text" placeholder="DCR OAuth2.0 Tester" />
     </div>
     <div id="work">
     </div>
